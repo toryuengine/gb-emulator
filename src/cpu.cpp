@@ -21,7 +21,7 @@ struct Registers {
 // メモリ定義
 // ============================================
 struct Memory {
-    uint8_t data[65536] = {};  // 0x0000〜0xFFFF を全部0で初期化
+    uint8_t data[65536] = {};
 };
 
 // ============================================
@@ -38,6 +38,11 @@ void writeMemory(Memory& mem, uint16_t address, uint8_t value) {
 // ============================================
 // フラグ操作ヘルパー
 // ============================================
+const uint8_t FLAG_Z = 0x80;  // bit7
+const uint8_t FLAG_N = 0x40;  // bit6
+const uint8_t FLAG_H = 0x20;  // bit5
+const uint8_t FLAG_C = 0x10;  // bit4
+
 void setFlag(Registers& reg, uint8_t flag, bool value) {
     if (value) reg.F |= flag;
     else       reg.F &= ~flag;
@@ -47,68 +52,71 @@ bool getFlag(Registers& reg, uint8_t flag) {
     return (reg.F & flag) != 0;
 }
 
-// フラグのビット位置
-const uint8_t FLAG_Z = 0x80;  // bit7
-const uint8_t FLAG_N = 0x40;  // bit6
-const uint8_t FLAG_H = 0x20;  // bit5
-const uint8_t FLAG_C = 0x10;  // bit4
-
 // ============================================
 // 命令の実装
+// 参照: https://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html
+//        https://meganesu.github.io/generate-gb-opcodes/
 // ============================================
 
-// 0x00: NOP - 何もしない
+// 0x00: NOP
+// バイト数: 1  サイクル: 4  フラグ: -/-/-/-
 void executeNOP(Registers& reg) {
     reg.PC += 1;
 }
 
-// 0x06: LD B, n - 次のバイトの値をBに入れる
+// 0x06: LD B, d8
+// バイト数: 2  サイクル: 8  フラグ: -/-/-/-
 void executeLD_B_n(Registers& reg, Memory& mem) {
     reg.B = mem.data[reg.PC + 1];
     reg.PC += 2;
 }
 
-// 0x0E: LD C, n - 次のバイトの値をCに入れる
+// 0x0E: LD C, d8
+// バイト数: 2  サイクル: 8  フラグ: -/-/-/-
 void executeLD_C_n(Registers& reg, Memory& mem) {
     reg.C = mem.data[reg.PC + 1];
     reg.PC += 2;
 }
 
-// 0x3E: LD A, n - 次のバイトの値をAに入れる
+// 0x3E: LD A, d8
+// バイト数: 2  サイクル: 8  フラグ: -/-/-/-
 void executeLD_A_n(Registers& reg, Memory& mem) {
     reg.A = mem.data[reg.PC + 1];
     reg.PC += 2;
 }
 
-// 0x78: LD A, B - Bの値をAに入れる
+// 0x78: LD A, B
+// バイト数: 1  サイクル: 4  フラグ: -/-/-/-
 void executeLD_A_B(Registers& reg) {
     reg.A = reg.B;
     reg.PC += 1;
 }
 
-// 0x80: ADD A, B - AにBを足す
+// 0x80: ADD A, B
+// バイト数: 1  サイクル: 4  フラグ: Z/0/H/C
 void executeADD_A_B(Registers& reg) {
     uint16_t result = reg.A + reg.B;
-    setFlag(reg, FLAG_Z, (result & 0xFF) == 0);       // 結果が0ならZ
-    setFlag(reg, FLAG_N, false);                       // 足し算なのでNは0
-    setFlag(reg, FLAG_H, ((reg.A & 0x0F) + (reg.B & 0x0F)) > 0x0F);  // Hフラグ
-    setFlag(reg, FLAG_C, result > 0xFF);               // Cフラグ
+    setFlag(reg, FLAG_Z, (result & 0xFF) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, ((reg.A & 0x0F) + (reg.B & 0x0F)) > 0x0F);
+    setFlag(reg, FLAG_C, result > 0xFF);
     reg.A = result & 0xFF;
     reg.PC += 1;
 }
 
-// 0xC3: JP a16 - 指定アドレスにジャンプ
+// 0xC3: JP a16
+// バイト数: 3  サイクル: 16  フラグ: -/-/-/-
+// アドレスはリトルエンディアン (下位バイト先、上位バイト後)
 void executeJP(Registers& reg, Memory& mem) {
     uint16_t address = mem.data[reg.PC + 1] | (mem.data[reg.PC + 2] << 8);
     reg.PC = address;
 }
 
-void execute
 // ============================================
-// CPUの1サイクル
+// CPUの1ステップ
 // ============================================
 void step(Registers& reg, Memory& mem) {
-    uint8_t opcode = mem.data[reg.PC];  // PCが指す命令を読む
+    uint8_t opcode = mem.data[reg.PC];
 
     switch (opcode) {
         case 0x00: executeNOP(reg);         break;
@@ -145,7 +153,6 @@ int main() {
     Registers reg;
     Memory mem;
 
-    // テストプログラム: 1 + 1 を計算する
     reg.PC = 0x0100;
     mem.data[0x0100] = 0x3E;  // LD A, 1
     mem.data[0x0101] = 0x01;
