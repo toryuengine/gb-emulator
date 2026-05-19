@@ -1122,7 +1122,7 @@ void execute0x9F(Registers& reg) {
     reg.PC += 1;
 }
 
-// AND B
+//AND A, B
 void execute0xA0(Registers& reg) {
     uint8_t result = reg.A & reg.B;
 
@@ -1890,19 +1890,272 @@ void execute0xDC(Registers& reg, Memory& mem) {
     }
 }
 
+//SBC A,d8
+void execute0xDE(Registers& reg, Memory& mem) {
+    uint8_t d8 = mem.data[reg.PC];
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
 
+    uint16_t result = reg.A - d8 - carry;
 
+    setFlag(reg, FLAG_Z, (result & 0xFF) == 0);
+    setFlag(reg, FLAG_N, true);
+    setFlag(reg, FLAG_H, ((reg.A & 0x0F) < (d8 & 0x0F) + carry));
+    setFlag(reg, FLAG_C, reg.A < d8 + carry);
 
-
-
-
-
-
-//
-void executeCB(Registers& reg, Memory& mem, uint8_t opcode){
-
+    reg.A = result & 0xFF;
+    reg.PC += 1;
 }
 
+//RST 18H
+void execute0xDF(Registers& reg, Memory& mem) {
+    uint16_t next = reg.PC+1;
+    
+    mem.data[reg.SP -1] = (next >> 8) & 0xFF;
+    mem.data[reg.SP -2] = next & 0xFF;
+    reg.SP -= 2;
+
+    reg.PC = 0x0012;
+}
+
+
+//LDH [a8], A
+void execute0xE0(Registers& reg, Memory& mem) {
+    uint8_t offset = mem.data[reg.PC + 1];
+    uint16_t address = 0xFF00 + offset;
+    mem.data[address] = reg.A;
+    reg.PC += 2;
+}
+
+//POP HL
+void execute0xE1(Registers& reg, Memory& mem) {
+    uint8_t lo = mem.data[reg.SP];
+    uint8_t hi = mem.data[reg.SP+1];
+
+    reg.L = lo;
+    reg.H = hi;
+
+    reg.SP += 2;
+    reg.PC += 1;
+}
+
+//LDH [C], A
+void execute0xE2(Registers& reg, Memory& mem) {
+    uint16_t address = 0xFF00 + reg.C;
+    mem.data[address] = reg.A;
+    reg.PC += 1;
+}
+
+//PUSH HL
+void execute0xE2(Registers& reg, Memory& mem) {
+    reg.SP -= 1;
+    mem.data[reg.SP] = reg.H;
+    reg.SP -= 1;
+    mem.data[reg.SP] = reg.L;
+    reg.PC += 1;
+}
+// AND A, n8
+void execute0xE6(Registers& reg, Memory& mem) {
+    uint8_t n8 = mem.data[reg.PC + 1];
+    uint8_t result = reg.A & n8;
+
+    setFlag(reg, FLAG_Z, result == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+    setFlag(reg, FLAG_C, false);
+
+    reg.A = result;
+    reg.PC += 2;
+}
+
+
+// RST 20H
+void execute0xE7(Registers& reg, Memory& mem) {
+    uint16_t next = reg.PC + 1;
+
+    mem.data[reg.SP - 1] = (next >> 8) & 0xFF;
+    mem.data[reg.SP - 2] = next & 0xFF;
+    reg.SP -= 2;
+
+    reg.PC = 0x0020;
+}
+
+
+//ADD SP,r8
+void execute0xE8(Registers& reg, Memory& mem) {
+    uint16_t result = reg.SP + mem.data[reg.PC + 1];
+
+    setFlag(reg, FLAG_Z, (result & 0xFF) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, ((reg.SP & 0x0F) + (mem.data[reg.PC] & 0x0F)) > 0x0F);
+    setFlag(reg, FLAG_C, result > 0xFF);
+
+    reg.SP = result & 0xFF;
+    reg.PC += 2;
+}
+
+void execute0xE9(Registers& reg) {
+    reg.PC = (reg.H << 8) | reg.L;
+}
+
+
+//LD (a16),A
+void execute0xEA(Registers& reg, Memory& mem) {
+    uint8_t lo = mem.data[reg.PC];
+    uint8_t hi = mem.data[reg.PC+1];
+
+    uint16_t bc = (hi << 8) | lo;
+
+    mem.data[bc] = reg.A;
+    reg.PC +=3;
+}
+
+//XOR d8
+void execute0xEE(Registers& reg, Memory& mem) {
+        uint8_t result = reg.A ^ mem.data[reg.PC];
+
+        setFlag(reg, FLAG_Z, result == 0);
+        setFlag(reg, FLAG_N, false);
+        setFlag(reg, FLAG_H, false);
+        setFlag(reg, FLAG_C, false);
+
+        reg.A = result;
+        reg.PC +=2;
+}
+
+
+//RST 28H
+void execute0xEF(Registers& reg, Memory& mem) {
+    uint16_t next = reg.PC + 1;
+    mem.data[reg.SP -1] = (next >> 8) & 0xFF;
+    mem.data[reg.SP -2] = next & 0xFF;
+    reg.SP -= 2;
+
+    reg.PC = 0x0028;
+}
+
+
+//LDH A,(a8)
+void execute0xF0(Registers& reg, Memory& mem) {
+    uint8_t offset = mem.data[reg.PC + 1];
+    uint16_t address = 0xFF00 + offset;
+    reg.A = mem.data[address];
+    reg.PC += 2;
+}
+
+//POP AF
+void execute0xF1(Registers& reg, Memory& mem) {
+    uint8_t lo = mem.data[reg.SP];
+    uint8_t hi = mem.data[reg.SP+1];
+
+    reg.F = lo;
+    reg.A = hi;
+
+    reg.PC +=1;
+    reg.SP +=2;
+}
+
+//LD A,(C)
+void execute0xF2(Registers& reg, Memory& mem) {
+    uint16_t address = 0xFF00 + reg.C;
+    reg.A = mem.data[address];
+}
+
+
+//PUSH AF
+void execute0xF5(Registers& reg, Memory& mem) {
+    reg.SP -= 1;
+    mem.data[reg.SP] = reg.A;
+    reg.SP -= 1;
+    mem.data[reg.SP] = reg.F;
+
+    reg.PC +=1;
+}
+
+//OR d8
+void execute0xF6(Registers& reg, Memory& mem) {
+    uint8_t d8 = mem.data[reg.PC+1];
+    uint8_t result = reg.A | d8;
+
+    setFlag(reg, FLAG_Z, result == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, false);
+
+    reg.A = result;
+    reg.PC += 2;
+}
+
+
+//RST 30H
+void execute0xF7(Registers& reg, Memory& mem){
+    uint16_t next = reg.PC +1;
+
+    mem.data[reg.SP -1] = (next >> 8) & 0xFF;
+    mem.data[reg.SP -2] = next & 0xEF;
+
+    reg.SP -=2;
+    reg.PC = 0x0030;
+}
+
+// LD HL, SP+r8
+void execute0xF8(Registers& reg, Memory& mem) {
+    int8_t r8 = (int8_t)mem.data[reg.PC + 1];
+    uint16_t result = reg.SP + r8;
+
+    setFlag(reg, FLAG_Z, false);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, ((reg.SP & 0x0F) + (r8 & 0x0F)) > 0x0F);
+    setFlag(reg, FLAG_C, ((reg.SP & 0xFF) + (r8 & 0xFF)) > 0xFF);
+
+    reg.H = result >> 8;
+    reg.L = result & 0xFF;
+    reg.PC += 2;
+}
+
+//LD SP,HL
+void execute0xF9(Registers& reg) {
+    reg.SP = (reg.H << 8) | reg.L;
+    reg.PC += 1;
+}
+
+// LD A, (a16)
+void execute0xFA(Registers& reg, Memory& mem) {
+    uint8_t lo = mem.data[reg.PC + 1];
+    uint8_t hi = mem.data[reg.PC + 2];
+    uint16_t address = (hi << 8) | lo;
+
+    reg.A = mem.data[address];
+    reg.PC += 3;
+}
+
+// EI
+void execute0xFB(Registers& reg) {
+    reg.IME = true;
+    reg.PC += 1;
+}
+
+//CP d8
+void execute0xFE(Registers& reg, Memory& mem) {
+    uint8_t d8 = mem.data[reg.PC+1];
+    uint8_t result = reg.A - d8;
+
+    setFlag(reg, FLAG_Z, result == 0);
+    setFlag(reg, FLAG_N, true);
+    setFlag(reg, FLAG_H, (reg.A & 0x0F) < (d8 & 0x0F));
+    setFlag(reg, FLAG_C, reg.A < d8);
+
+    reg.PC += 2;
+}
+
+//RST 38H
+void execute0xFF(Registers& reg, Memory& mem) {
+    uint16_t next = reg.PC + 1;
+    mem.data[reg.SP - 1] = (next >> 8) & 0xFF;
+    mem.data[reg.SP - 2] = next & 0xFF;
+    reg.SP -= 2;
+
+    reg.PC = 0x0038;
+}
 
 
 
