@@ -2158,6 +2158,119 @@ void execute0xFF(Registers& reg, Memory& mem) {
 }
 
 
+///プレフィックスコード
+
+
+//     set命令
+//SET 0,B
+void executeCB0xC0(Registers& reg) {
+    reg.B |= 0x01;
+    reg.PC += 2;
+}
+
+
+//SET 0,C
+void executeCB0xC1(Registers& reg) {
+    reg.C |= 0x01;
+    reg.PC += 2;
+}
+
+//SET 0,D
+void executeCB0xC2(Registers& reg) {
+    reg.D |= 0x01;
+    reg.PC += 2;
+}
+
+// SET 0,E
+void executeCB0xC3(Registers& reg) {
+    reg.E |= 0x01;
+    reg.PC += 2;
+}
+
+//SET 0,H
+void executeCB0xC4(Registers& reg) {
+    reg.H |= 0x01;
+    reg.PC += 2;
+}
+
+//SET 0,L
+void executeCB0xC5(Registers& reg) {
+    reg.L |= 0x01;
+    reg.PC += 2;
+}
+
+////SET 0,(HL)
+void executeCB0xC6(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    mem.data[hl] |= 0x01;
+    reg.PC += 2;
+}
+
+//SET 0,A
+void executeCB0xC7(Registers& reg) {
+    reg.A |= 0x01;
+    reg.PC += 2;
+}
+
+//SET 1,B
+void executeCB0xC8(Registers& reg) {
+    reg.B |= 0x02;
+    reg.PC += 2;
+}
+
+//SET 1,C
+void executeCB0xC9(Registers& reg) {
+    reg.C |= 0x02;
+    reg.PC += 2;
+}
+
+//SET 1,D
+void executeCB0xCA(Registers& reg) {
+    reg.D |= 0x02;
+    reg.PC += 2;
+}
+
+//SET 1,E
+void executeCB0xCB(Registers& reg) {
+    reg.E |= 0x02;
+    reg.PC += 2;
+}
+
+//SET 1,H
+void executeCB0xCC(Registers& reg) {
+    reg.H |= 0x02;
+    reg.PC += 2;
+}
+
+//SET 1,L
+void executeCB0xCD(Registers& reg) {
+    reg.L |= 0x02;
+    reg.PC += 2;
+}
+
+//SET 1,(HL)
+void executeCB0xCE(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    mem.data[hl] |= 0x02;
+    reg.PC += 2;
+}
+
+//SET 1,A
+void executeCB0xCF(Registers& reg) {
+    reg.A |= 0x02;
+    reg.PC += 2;
+}
+
+//SET 2,B
+void executeCB0xD0(Registers& reg) {
+
+}
+
+
+
+
+
+
 
 void step(Registers& reg, Memory& mem) {
     uint8_t opcode = mem.data[reg.PC];
