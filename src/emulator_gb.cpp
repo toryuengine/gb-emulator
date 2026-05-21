@@ -2218,9 +2218,7 @@ void execute0xFF(Registers& reg, Memory& mem) {
 }
 
 
-///プレフィックスコード
-
-
+///プレフィックスコード　prefix
 //     set命令
 //SET 0,B
 void executeCB0xC0(Registers& reg) {
@@ -2262,7 +2260,9 @@ void executeCB0xC5(Registers& reg) {
 ////SET 0,(HL)
 void executeCB0xC6(Registers& reg, Memory& mem) {
     uint16_t hl = (reg.H << 8) | reg.L;
-    mem.data[hl] |= 0x01;
+    uint8_t value = readMemory(mem, hl);
+    value |= 0x01;
+    writeMemory(mem, hl, value);
     reg.PC += 2;
 }
 
@@ -2311,7 +2311,9 @@ void executeCB0xCD(Registers& reg) {
 //SET 1,(HL)
 void executeCB0xCE(Registers& reg, Memory& mem) {
     uint16_t hl = (reg.H << 8) | reg.L;
-    mem.data[hl] |= 0x02;
+    uint8_t value = readMemory(mem, hl);
+    value |= 0x02;
+    writeMemory(mem, hl, value);
     reg.PC += 2;
 }
 
@@ -2323,11 +2325,207 @@ void executeCB0xCF(Registers& reg) {
 
 //SET 2,B
 void executeCB0xD0(Registers& reg) {
-
+    reg.B |= 0x04;
+    reg.PC += 2;
 }
 
+//SET 2,C
+void executeCB0xD1(Registers& reg) {
+    reg.C |= 0x04;
+    reg.PC += 2;
+}
 
+//SET 2,D
+void executeCB0xD2(Registers& reg) {
+    reg.D |= 0x04;
+    reg.PC += 2;
+}
 
+//SET 2,E
+void executeCB0xD3(Registers& reg) {
+    reg.E |= 0x04;
+    reg.PC += 2;
+}
+
+//SET 2,H
+void executeCB0xD4(Registers& reg) {
+    reg.H |= 0x04;
+    reg.PC += 2;
+}
+
+//SET 2,L
+void executeCB0xD5(Registers& reg) {
+    reg.L |= 0x04;
+    reg.PC += 2;
+}
+
+//SET 2,(HL)
+void executeCB0xD6(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    value |= 0x04;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//SET 2,A
+void executeCB0xD7(Registers& reg) {
+    reg.A |= 0x04;
+    reg.PC += 2;
+}
+
+//SET 3,B
+void executeCB0xD8(Registers& reg) {
+    reg.B |= 0x08;
+    reg.PC += 2;
+}
+
+//SET 3,C
+void executeCB0xD9(Registers& reg) {
+    reg.C |= 0x08;
+    reg.PC += 2;
+}
+
+//SET 3,D
+void executeCB0xDA(Registers& reg) {
+    reg.D |= 0x08;
+    reg.PC += 2;
+}
+
+//SET 3,E
+void executeCB0xDB(Registers& reg) {
+    reg.E |= 0x08;
+    reg.PC += 2;
+}
+
+//SET 3,H
+void executeCB0xDC(Registers& reg) {
+    reg.H |= 0x08;
+    reg.PC += 2;
+}
+
+//SET 3,L
+void executeCB0xDD(Registers& reg) {
+    reg.L |= 0x08;
+    reg.PC += 2;
+}
+
+//SET 3,(HL)
+void executeCB0xDE(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    reg.L |= 0x08;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//SET 3,A
+void executeCB0xDF(Registers& reg) {
+    reg.A |= 0x08;
+    reg.PC += 2;
+}
+
+//SET 4,B
+void executeCB0xE0(Registers& reg) {
+    reg.B |= 0x10;
+    reg.PC += 2;
+}
+
+//SET 4,C
+void executeCB0xE1(Registers& reg) {
+    reg.C |= 0x10;
+    reg.PC += 2;
+}
+
+//SET 4,C
+void executeCB0xE2(Registers& reg) {
+    reg.C |= 0x10;
+    reg.PC += 2;
+}
+
+//SET 4,D
+void executeCB0xE3(Registers& reg) {
+    reg.D |= 0x10;
+    reg.PC += 2;
+}
+
+//SET 4,E
+void executeCB0xE4(Registers& reg) {
+    reg.E |= 0x10;
+    reg.PC += 2;
+}
+
+//SET 4,H
+void executeCB0xE5(Registers& reg) {
+    reg.H |= 0x10;
+    reg.PC += 2;
+}
+
+//SET 4,L
+void executeCB0xE6(Registers& reg) {
+    reg.L |= 0x10;
+    reg.PC += 2;
+}
+
+//SET 4,(HL)
+void executeCB0xE7(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    value |= 0x10;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//SET 4,A
+void executeCB0xE8(Registers& reg) {
+    reg.A |= 0x10;
+    reg.PC += 2;  
+}
+
+//SET 5,B
+void executeCB0xE9(Registers& reg) {
+    reg.B |= 0x20;
+    reg.PC += 2;  
+}
+
+//SET 5,C
+void executeCB0xEA(Registers& reg) {
+    reg.C |= 0x20;
+    reg.PC += 2;  
+}
+
+//SET 5,E
+void executeCB0xEB(Registers& reg) {
+    reg.E |= 0x20;
+    reg.PC += 2;  
+}
+
+//SET 5,H
+void executeCB0xEC(Registers& reg) {
+    reg.H |= 0x20;
+    reg.PC += 2;  
+}
+
+//SET 5,L
+void executeCB0xED(Registers& reg) {
+    reg.L |= 0x20;
+    reg.PC += 2;  
+}
+
+//SET 5,(HL)
+void executeCB0xEE(Registers& reg, Memory&mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    reg.L |= 0x20;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;  
+}
+
+//SET 5,A
+void executeCB0xEF(Registers& reg) {
+    reg.A |= 0x20;
+    reg.PC += 2;  
+}
 
 
 
