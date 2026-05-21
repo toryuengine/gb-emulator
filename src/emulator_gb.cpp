@@ -39,25 +39,86 @@ void setFlag(Registers& reg, uint8_t flag, bool value) {
 bool getFlag(Registers& reg, uint8_t flag) {
     return (reg.F & flag) != 0;
 }
+// ============================================
 // メモリの定義16bit
-struct Memory {
+// ============================================
+struct aMemory {
     uint8_t data[65536] = {};
 };
 
+
+struct Memory {
+    uint8_t rom[0x8000];      // 0x0000〜0x7FFF ROM
+    uint8_t vram[0x2000];     // 0x8000〜0x9FFF VRAM
+    uint8_t extram[0x2000];   // 0xA000〜0xBFFF 外部RAM
+    uint8_t ram[0x2000];      // 0xC000〜0xDFFF 内部RAM
+    uint8_t oam[0xA0];        // 0xFE00〜0xFE9F OAM
+    uint8_t io[0x80];         // 0xFF00〜0xFF7F IOポート
+    uint8_t hram[0x7F];       // 0xFF80〜0xFFFE スタック領域
+    uint8_t ie;               // 0xFFFF 割り込みレジスタ
+};
+
 uint8_t readMemory(Memory& mem, uint16_t address) {
-    return mem.data[address];
+    if (address <= 0x7FFF) {
+        return mem.rom[address];
+    
+    } else if (address <= 0x9FFF) {
+        return mem.vram[address-0x8000];
+
+    } else if (address <= 0xBFFF) {
+        return mem.extram[address - 0xA000]; 
+
+    } else if (address <= 0xDFFF) {
+        return mem.ram[address - 0xC000];
+
+    } else if (address <= 0xFE9F) {
+        return mem.oam[address - 0xFE00];
+    
+    } else if (address <= 0xFF7F) {
+        return mem.io[address - 0xFF00];
+
+    } else if (address <= 0xFFFE) {
+        return mem.hram[address - 0xFF80];
+    
+    } else if (address <= 0xFFFF) {
+        return  mem.ie;
+    }
 }
 
 void writeMemory(Memory& mem, uint16_t address, uint8_t value) {
-    mem.data[address] = value;
+    if (address <= 0x7FFF) {
+        mem.rom[address] = value;
+
+    } else if (address <= 0x9FFF) {
+        mem.vram[address - 0x8000] = value;
+
+    } else if (address <= 0xBFFF) {
+        mem.extram[address - 0xA000] = value;
+
+    } else if (address <= 0xDFFF) {
+        mem.ram[address - 0xC000] = value;
+
+    } else if (address <= 0xFE9F) {
+        mem.oam[address - 0xFE00] = value;
+
+    } else if (address <= 0xFF7F) {
+        mem.io[address - 0xFF00] = value;
+
+    } else if (address <= 0xFFFE) {
+        mem.hram[address - 0xFF80] = value;
+
+    } else if (address == 0xFFFF) {
+        mem.ie = value;
+    }
 }
+
 
 void executeNOP(Registers& reg) {
     reg.PC += 1;
 }
 
 void executeLD_B_n(Registers& reg, Memory& mem) {
-    uint8_t value = mem.data[reg.PC + 1];
+    uint8_t value = readMemory(mem, reg.PC+1);
     reg.B = value;
     reg.PC += 2;
 }
@@ -65,8 +126,8 @@ void executeLD_B_n(Registers& reg, Memory& mem) {
 
 //LD BC, n16
 void execute0x01(Registers& reg, Memory& mem) {
-    uint8_t lo = mem.data[reg.PC + 1];
-    uint8_t hi = mem.data[reg.PC + 2];
+    uint8_t lo = readMemory(mem, reg.PC + 1);
+    uint8_t hi = readMemory(mem, reg.PC + 2);
 
     reg.B = hi;
     reg.C = lo;
@@ -80,8 +141,7 @@ void execute0x02(Registers& reg, Memory& mem) {
 
     uint16_t bc = (hi << 8) | lo;
     
-
-    mem.data[bc]=reg.A;
+    writeMemory(mem, bc, reg.A);
     reg.PC += 1;
 }
 
@@ -104,7 +164,7 @@ void execute0x0A(Registers& reg, Memory& mem) {
 void execute0x0E(Registers& reg, Memory& mem) {
     uint8_t hi = mem.data[reg.PC+1];
     reg.C = hi;
-
+ 
     reg.PC += 2;
 }
 
