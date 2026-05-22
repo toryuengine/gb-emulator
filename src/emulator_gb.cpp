@@ -2342,65 +2342,65 @@ void executeCB0x08(Registers& reg) {
 
 //RRC C
 void executeCB0x09(Registers& reg) {
-    uint8_t bit7 = (reg.C >> 7) & 1;
-    reg.C = (reg.C << 1) | bit7;
+    uint8_t bit0 = reg.C & 1;
+    reg.C = (reg.C >> 1) | (bit0 << 7);
 
     setFlag(reg, FLAG_Z, reg.C == 0);
     setFlag(reg, FLAG_N, false);
     setFlag(reg, FLAG_H, false);
-    setFlag(reg, FLAG_C, bit7);
+    setFlag(reg, FLAG_C, bit0);
 
     reg.PC += 2;
 }
 
 //RRC D
 void executeCB0x0A(Registers& reg) {
-    uint8_t bit7 = (reg.D >> 7) & 1;
-    reg.D = (reg.D << 1) | bit7;
+    uint8_t bit0 = reg.D & 1;
+    reg.D = (reg.D >> 1) | (bit0 << 7);
 
     setFlag(reg, FLAG_Z, reg.D == 0);
     setFlag(reg, FLAG_N, false);
     setFlag(reg, FLAG_H, false);
-    setFlag(reg, FLAG_C, bit7);
+    setFlag(reg, FLAG_C, bit0);
 
     reg.PC += 2;
 }
 
 //RRC E
 void executeCB0x0B(Registers& reg) {
-    uint8_t bit7 = (reg.E >> 7) & 1;
-    reg.E = (reg.E << 1) | bit7;
+    uint8_t bit0 = reg.E & 1;
+    reg.E = (reg.E >> 1) | (bit0 << 7);
 
     setFlag(reg, FLAG_Z, reg.E == 0);
     setFlag(reg, FLAG_N, false);
     setFlag(reg, FLAG_H, false);
-    setFlag(reg, FLAG_C, bit7);
+    setFlag(reg, FLAG_C, bit0);
 
     reg.PC += 2;
 }
 
 //RRC H
 void executeCB0x0C(Registers& reg) {
-    uint8_t bit7 = (reg.H >> 7) & 1;
-    reg.H = (reg.H << 1) | bit7;
+    uint8_t bit0 = reg.H & 1;
+    reg.H = (reg.H >> 1) | (bit0 << 7);
 
     setFlag(reg, FLAG_Z, reg.H == 0);
     setFlag(reg, FLAG_N, false);
     setFlag(reg, FLAG_H, false);
-    setFlag(reg, FLAG_C, bit7);
+    setFlag(reg, FLAG_C, bit0);
 
     reg.PC += 2;
 }
 
 //RRC L
 void executeCB0x0D(Registers& reg) {
-    uint8_t bit7 = (reg.L >> 7) & 1;
-    reg.L = (reg.L << 1) | bit7;
+    uint8_t bit0 = reg.L & 1;
+    reg.L = (reg.L >> 1) | (bit0 << 7);
 
     setFlag(reg, FLAG_Z, reg.L == 0);
     setFlag(reg, FLAG_N, false);
     setFlag(reg, FLAG_H, false);
-    setFlag(reg, FLAG_C, bit7);
+    setFlag(reg, FLAG_C, bit0);
 
     reg.PC += 2;
 }
@@ -2409,27 +2409,25 @@ void executeCB0x0D(Registers& reg) {
 void executeCB0x0E(Registers& reg, Memory& mem) {
     uint16_t hl = (reg.H << 8) | reg.L;
     uint8_t value = readMemory(mem, hl);
-    uint8_t bit7 = (value >> 7) & 1;
-    value = (value << 1) | bit7;
-
+    uint8_t bit0 = value & 1;
+    value = (value >> 1) | (bit0 << 7);
     setFlag(reg, FLAG_Z, value == 0);
     setFlag(reg, FLAG_N, false);
     setFlag(reg, FLAG_H, false);
-    setFlag(reg, FLAG_C, bit7);
-
+    setFlag(reg, FLAG_C, bit0);
     writeMemory(mem, hl, value);
     reg.PC += 2;
 }
 
 //RRC A
 void executeCB0x0F(Registers& reg) {
-    uint8_t bit7 = (reg.A >> 7) & 1;
-    reg.A = (reg.A << 1) | bit7;
+    uint8_t bit0 = reg.A & 1;
+    reg.A = (reg.A >> 1) | (bit0 << 7);
 
     setFlag(reg, FLAG_Z, reg.A == 0);
     setFlag(reg, FLAG_N, false);
     setFlag(reg, FLAG_H, false);
-    setFlag(reg, FLAG_C, bit7);
+    setFlag(reg, FLAG_C, bit0);
 
     reg.PC += 2;
 }
@@ -2905,7 +2903,7 @@ void executeCB0x30(Registers& reg) {
 
 //SWAP C
 void executeCB0x31(Registers& reg) {
-    reg.B = ((reg.C & 0x0F) << 4) | ((reg.C & 0xF0) >> 4);
+    reg.C = ((reg.C & 0x0F) << 4) | ((reg.C & 0xF0) >> 4);
 
     setFlag(reg, FLAG_Z, reg.C == 0);
     setFlag(reg, FLAG_N, false);
@@ -2917,7 +2915,7 @@ void executeCB0x31(Registers& reg) {
 
 //SWAP D
 void executeCB0x32(Registers& reg) {
-    reg.D = ((reg.C & 0x0F) << 4) | ((reg.D & 0xF0) >> 4);
+    reg.D = ((reg.D & 0x0F) << 4) | ((reg.D & 0xF0) >> 4);
 
     setFlag(reg, FLAG_Z, reg.D == 0);
     setFlag(reg, FLAG_N, false);
@@ -2929,7 +2927,7 @@ void executeCB0x32(Registers& reg) {
 
 //SWAP E
 void executeCB0x33(Registers& reg) {
-    reg.D = ((reg.E & 0x0F) << 4) | ((reg.E & 0xF0) >> 4);
+    reg.E = ((reg.E & 0x0F) << 4) | ((reg.E & 0xF0) >> 4);
 
     setFlag(reg, FLAG_Z, reg.E == 0);
     setFlag(reg, FLAG_N, false);
@@ -2980,7 +2978,7 @@ void executeCB0x36(Registers& reg, Memory& mem) {
 
 //SWAP A
 void executeCB0x37(Registers& reg) {
-    reg.A = ((reg.L & 0x0F) << 4) | ((reg.A & 0xF0) >> 4);
+    reg.A = ((reg.A & 0x0F) << 4) | ((reg.A & 0xF0) >> 4);
 
     setFlag(reg, FLAG_Z, reg.A == 0);
     setFlag(reg, FLAG_N, false);
@@ -3245,9 +3243,9 @@ void executeCB0x4E(Registers& reg, Memory& mem) {
     reg.PC += 2;
 }
 
-//BIT 1,E
+//BIT 1, A
 void executeCB0x4F(Registers& reg) {
-    setFlag(reg, FLAG_Z, (reg.E & 0x02) == 0);
+    setFlag(reg, FLAG_Z, (reg.A & 0x02) == 0);
     setFlag(reg, FLAG_N, false);
     setFlag(reg, FLAG_H, true);
 
@@ -4376,7 +4374,7 @@ void executeCB0xE7(Registers& reg) {
 
 //SET 5,B
 void executeCB0xE8(Registers& reg) {
-    reg.B |= 020;
+    reg.B |= 0x20;
     reg.PC += 2;  
 }
 
