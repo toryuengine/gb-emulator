@@ -2218,8 +2218,1905 @@ void execute0xFF(Registers& reg, Memory& mem) {
 }
 
 
-///プレフィックスコード　prefix
-//     set命令
+///プレフィックスコード-prefix
+
+//RLC B
+void executeCB0x00(Registers& reg) {
+    uint8_t bit7 = (reg.B >> 7) & 1;
+    reg.B = (reg.B << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.B == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//RLC C
+void executeCB0x01(Registers& reg) {
+    uint8_t bit7 = (reg.C >> 7) & 1;
+    reg.C = (reg.C << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.C == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//RLC D
+void executeCB0x02(Registers& reg) {
+    uint8_t bit7 = (reg.D >> 7) & 1;
+    reg.D = (reg.D << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.D == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//RLC E
+void executeCB0x03(Registers& reg) {
+    uint8_t bit7 = (reg.E >> 7) & 1;
+    reg.E = (reg.E << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.E == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//RLC H
+void executeCB0x04(Registers& reg) {
+    uint8_t bit7 = (reg.H >> 7) & 1;
+    reg.H = (reg.H << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.H == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//RLC L
+void executeCB0x05(Registers& reg) {
+    uint8_t bit7 = (reg.L >> 7) & 1;
+    reg.L = (reg.L << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.L == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//RLC (HL)
+void executeCB0x06(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t bit7 = (reg.L >> 7) & 1;
+    reg.L = (reg.L << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.L == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//RLC A
+void executeCB0x07(Registers& reg) {
+    uint8_t bit7 = (reg.A >> 7) & 1;
+    reg.A = (reg.A << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.A == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+// RRC B
+void executeCB0x08(Registers& reg) {
+    uint8_t bit0 = reg.B & 1;
+    reg.B = (reg.B >> 1) | (bit0 << 7);
+
+    setFlag(reg, FLAG_Z, reg.B == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+//SRL C
+void executeCB0x09(Registers& reg) {
+    uint8_t bit7 = (reg.C >> 7) & 1;
+    reg.C = (reg.C << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.C == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//SRL D
+void executeCB0x0A(Registers& reg) {
+    uint8_t bit7 = (reg.D >> 7) & 1;
+    reg.D = (reg.D << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.D == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//SRL E
+void executeCB0x0B(Registers& reg) {
+    uint8_t bit7 = (reg.E >> 7) & 1;
+    reg.E = (reg.E << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.E == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//SRL H
+void executeCB0x0C(Registers& reg) {
+    uint8_t bit7 = (reg.H >> 7) & 1;
+    reg.H = (reg.H << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.H == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//SRL L
+void executeCB0x0D(Registers& reg) {
+    uint8_t bit7 = (reg.L >> 7) & 1;
+    reg.L = (reg.L << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.L == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//SRL (HL)
+void executeCB0x0E(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    uint8_t bit7 = (value >> 7) & 1;
+    value = (value << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, value == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//SRL A
+void executeCB0x0F(Registers& reg) {
+    uint8_t bit7 = (reg.A >> 7) & 1;
+    reg.A = (reg.A << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.A == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+// RL B
+void executeCB0x10(Registers& reg) {
+    uint8_t bit7 = (reg.B >> 7) & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.B = (reg.B << 1) | carry;
+
+    setFlag(reg, FLAG_Z, reg.B == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+
+// RL C
+void executeCB0x11(Registers& reg) {
+    uint8_t bit7 = (reg.C >> 7) & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.C = (reg.C << 1) | carry;
+
+    setFlag(reg, FLAG_Z, reg.C == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+// RL D
+void executeCB0x12(Registers& reg) {
+    uint8_t bit7 = (reg.D >> 7) & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.D = (reg.D << 1) | carry;
+
+    setFlag(reg, FLAG_Z, reg.D == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+// RL E
+void executeCB0x13(Registers& reg) {
+    uint8_t bit7 = (reg.E >> 7) & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.E = (reg.E << 1) | carry;
+
+    setFlag(reg, FLAG_Z, reg.E == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+// RL H
+void executeCB0x14(Registers& reg) {
+    uint8_t bit7 = (reg.H >> 7) & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.H = (reg.H << 1) | carry;
+
+    setFlag(reg, FLAG_Z, reg.H == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//RL L
+void executeCB0x15(Registers& reg) {
+    uint8_t bit7 = (reg.L >> 7) & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.L = (reg.L << 1) | carry;
+
+    setFlag(reg, FLAG_Z, reg.L == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//RL (HL)
+void executeCB0x16(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+
+    uint8_t bit7 = (value >> 7) & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    value = (value << 1) | carry;
+
+    setFlag(reg, FLAG_Z, value == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//RL A
+void executeCB0x17(Registers& reg) {
+    uint8_t bit7 = (reg.A >> 7) & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.A = (reg.A << 1) | carry;
+
+    setFlag(reg, FLAG_Z, reg.A == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+// RR B
+void executeCB0x18(Registers& reg) {
+    uint8_t bit0 = reg.B & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.B = (reg.B >> 1) | (carry << 7);
+
+    setFlag(reg, FLAG_Z, reg.B == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+// RR C
+void executeCB0x19(Registers& reg) {
+    uint8_t bit0 = reg.C & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.C = (reg.C >> 1) | (carry << 7);
+
+    setFlag(reg, FLAG_Z, reg.C == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+// RR D
+void executeCB0x1A(Registers& reg) {
+    uint8_t bit0 = reg.D & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.D = (reg.D >> 1) | (carry << 7);
+
+    setFlag(reg, FLAG_Z, reg.D == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+// RR E
+void executeCB0x1B(Registers& reg) {
+    uint8_t bit0 = reg.E & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.E = (reg.E >> 1) | (carry << 7);
+
+    setFlag(reg, FLAG_Z, reg.E == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+// RR H
+void executeCB0x1C(Registers& reg) {
+    uint8_t bit0 = reg.H & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.H = (reg.H >> 1) | (carry << 7);
+
+    setFlag(reg, FLAG_Z, reg.H == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+// RR L
+void executeCB0x1D(Registers& reg) {
+    uint8_t bit0 = reg.L & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.L = (reg.L >> 1) | (carry << 7);
+
+    setFlag(reg, FLAG_Z, reg.L == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+// RR (HL)
+void executeCB0x1E(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    uint8_t bit0 = value & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    value = (value >> 1) | (carry << 7);
+
+    setFlag(reg, FLAG_Z, value == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//RR A
+void executeCB0x1F(Registers& reg) {
+    uint8_t bit0 = reg.A & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.A = (reg.A >> 1) | (carry << 7);
+
+    setFlag(reg, FLAG_Z, reg.A == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+
+
+//SLA B
+void executeCB0x20(Registers& reg) {
+    uint8_t bit7 = (reg.B >> 7) & 1;
+    reg.B = reg.B << 1;
+
+    setFlag(reg, FLAG_Z, reg.B == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//SLA C
+void executeCB0x21(Registers& reg) {
+    uint8_t bit7 = (reg.C >> 7) & 1;
+    reg.C = reg.C << 1;
+
+    setFlag(reg, FLAG_Z, reg.C == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//SLA D
+void executeCB0x22(Registers& reg) {
+    uint8_t bit7 = (reg.D >> 7) & 1;
+    reg.D = reg.D << 1;
+
+    setFlag(reg, FLAG_Z, reg.D == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//SLA E
+void executeCB0x23(Registers& reg) {
+    uint8_t bit7 = (reg.E >> 7) & 1;
+    reg.E = reg.E << 1;
+
+    setFlag(reg, FLAG_Z, reg.E == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 2;
+}
+
+//SLA H
+void executeCB0x24(Registers& reg) {
+    uint8_t bit7 = (reg.H >> 7) & 1;
+    reg.H = reg.H << 1;
+
+    setFlag(reg, FLAG_Z, reg.H == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+    
+    reg.PC += 2;
+}
+
+//SLA L
+void executeCB0x25(Registers& reg) {
+    uint8_t bit7 = (reg.L >> 7) & 1;
+    reg.L = reg.L << 1;
+
+    setFlag(reg, FLAG_Z, reg.L == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+    
+    reg.PC += 2;
+}
+
+//SLA (HL)
+void executeCB0x26(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+
+    uint8_t bit7 = (value >> 7) & 1;
+    value = value << 1;
+
+    setFlag(reg, FLAG_Z, value == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+    
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//SLA A
+void executeCB0x27(Registers& reg) {
+    uint8_t bit7 = (reg.A >> 7) & 1;
+    reg.A = reg.A << 1;
+
+    setFlag(reg, FLAG_Z, reg.A == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+    
+    reg.PC += 2;
+}
+
+// SRA B
+void executeCB0x28(Registers& reg) {
+    uint8_t bit0 = reg.B & 1;
+    uint8_t bit7 = reg.B & 0x80;
+    reg.B = (reg.B >> 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.B == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+// SRA C
+void executeCB0x29(Registers& reg) {
+    uint8_t bit0 = reg.C & 1;
+    uint8_t bit7 = reg.C & 0x80;
+    reg.C = (reg.C >> 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.C == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+// SRA D
+void executeCB0x2A(Registers& reg) {
+    uint8_t bit0 = reg.D & 1;
+    uint8_t bit7 = reg.D & 0x80;
+    reg.D = (reg.D >> 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.D == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+// SRA E
+void executeCB0x2B(Registers& reg) {
+    uint8_t bit0 = reg.E & 1;
+    uint8_t bit7 = reg.E & 0x80;
+    reg.E = (reg.E >> 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.E == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+// SRA H
+void executeCB0x2C(Registers& reg) {
+    uint8_t bit0 = reg.H & 1;
+    uint8_t bit7 = reg.H & 0x80;
+    reg.H = (reg.H >> 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.H == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+//SRA L
+void executeCB0x2D(Registers& reg) {
+    uint8_t bit0 = reg.L & 1;
+    uint8_t bit7 = reg.L & 0x80;
+    reg.L = (reg.L >> 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.L == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+//SRA (HL)
+void executeCB0x2E(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    uint8_t bit0 = value & 1;
+    uint8_t bit7 = value & 0x80;
+    value = (value >> 1) | bit7;
+
+    setFlag(reg, FLAG_Z, value == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//SRA A
+void executeCB0x2F(Registers& reg) {
+    uint8_t bit0 = reg.A & 1;
+    uint8_t bit7 = reg.A & 0x80;
+    reg.A = (reg.A >> 1) | bit7;
+
+    setFlag(reg, FLAG_Z, reg.A == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+//SWAP B
+void executeCB0x30(Registers& reg) {
+    reg.B = ((reg.B & 0x0F) << 4) | ((reg.B & 0xF0) >> 4);
+
+    setFlag(reg, FLAG_Z, reg.B == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, false);
+
+    reg.PC += 2;
+}
+
+//SWAP C
+void executeCB0x31(Registers& reg) {
+    reg.B = ((reg.C & 0x0F) << 4) | ((reg.C & 0xF0) >> 4);
+
+    setFlag(reg, FLAG_Z, reg.C == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, false);
+
+    reg.PC += 2;
+}
+
+//SWAP D
+void executeCB0x32(Registers& reg) {
+    reg.D = ((reg.C & 0x0F) << 4) | ((reg.D & 0xF0) >> 4);
+
+    setFlag(reg, FLAG_Z, reg.D == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, false);
+
+    reg.PC += 2;
+}
+
+//SWAP E
+void executeCB0x33(Registers& reg) {
+    reg.D = ((reg.E & 0x0F) << 4) | ((reg.E & 0xF0) >> 4);
+
+    setFlag(reg, FLAG_Z, reg.E == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, false);
+
+    reg.PC += 2;
+}
+
+//SWAP H
+void executeCB0x34(Registers& reg) {
+    reg.H = ((reg.H & 0x0F) << 4) | ((reg.H & 0xF0) >> 4);
+
+    setFlag(reg, FLAG_Z, reg.H == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, false);
+
+    reg.PC += 2;
+}
+
+//SWAP L
+void executeCB0x35(Registers& reg) {
+    reg.L = ((reg.L & 0x0F) << 4) | ((reg.L & 0xF0) >> 4);
+
+    setFlag(reg, FLAG_Z, reg.L == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, false);
+
+    reg.PC += 2;
+}
+
+//SWAP (HL)
+void executeCB0x36(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    value = ((value & 0x0F) << 4) | ((value & 0xF0) >> 4);
+
+    setFlag(reg, FLAG_Z, value == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, false);
+
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//SWAP A
+void executeCB0x37(Registers& reg) {
+    reg.A = ((reg.L & 0x0F) << 4) | ((reg.A & 0xF0) >> 4);
+
+    setFlag(reg, FLAG_Z, reg.A == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, false);
+
+    reg.PC += 2;
+}
+
+//SRL B
+void executeCB0x38(Registers& reg) {
+    uint8_t bit0 = reg.B & 1;
+    reg.B = reg.B >> 1;
+
+    setFlag(reg, FLAG_Z, reg.B == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+//SRL C
+void executeCB0x39(Registers& reg) {
+    uint8_t bit0 = reg.C & 1;
+    reg.C = reg.C >> 1;
+
+    setFlag(reg, FLAG_Z, reg.C == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+//SRL D
+void executeCB0x3A(Registers& reg) {
+    uint8_t bit0 = reg.D & 1;
+    reg.D = reg.D >> 1;
+
+    setFlag(reg, FLAG_Z, reg.D == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+//SRL E
+void executeCB0x3B(Registers& reg) {
+    uint8_t bit0 = reg.E & 1;
+    reg.E = reg.E >> 1;
+
+    setFlag(reg, FLAG_Z, reg.E == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+//SRL H
+void executeCB0x3C(Registers& reg) {
+    uint8_t bit0 = reg.H & 1;
+    reg.H = reg.H >> 1;
+
+    setFlag(reg, FLAG_Z, reg.H == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+//SRL L
+void executeCB0x3D(Registers& reg) {
+    uint8_t bit0 = reg.L & 1;
+    reg.L = reg.L >> 1;
+
+    setFlag(reg, FLAG_Z, reg.L == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+//SRL (HL)
+void executeCB0x3E(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+
+    uint8_t bit0 = value & 1;
+    value = value >> 1;
+
+    setFlag(reg, FLAG_Z, value == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//SRL A
+void executeCB0x3F(Registers& reg) {
+    uint8_t bit0 = reg.A & 1;
+    reg.A = reg.A >> 1;
+
+    setFlag(reg, FLAG_Z, reg.A == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 2;
+}
+
+
+
+
+
+//BIT 0,B
+void executeCB0x40(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.B & 0x01) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+
+//BIT 0,C
+void executeCB0x41(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.C & 0x01) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 0,D
+void executeCB0x42(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.D & 0x01) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 0,E
+void executeCB0x43(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.E & 0x01) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 0,H
+void executeCB0x44(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.H & 0x01) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 0,L
+void executeCB0x45(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.L & 0x01) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//RES 0,(HL)
+void executeCB0x46(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    setFlag(reg, FLAG_Z, (value & 0x01) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//BIT 0,A
+void executeCB0x47(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.A & 0x01) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 1,B
+void executeCB0x48(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.B & 0x02) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 1,C
+void executeCB0x49(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.C & 0x02) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 1,D
+void executeCB0x4A(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.D & 0x02) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 1,E
+void executeCB0x4B(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.E & 0x02) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 1,H
+void executeCB0x4C(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.H & 0x02) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 1,L
+void executeCB0x4D(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.L & 0x02) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 1,E
+void executeCB0x4E(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.E & 0x02) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 1,(HL)
+void executeCB0x4F(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+
+    setFlag(reg, FLAG_Z, (value & 0x02) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//BIT 2,B
+void executeCB0x50(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.B & 0x04) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 2,C
+void executeCB0x51(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.C & 0x04) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 2,D
+void executeCB0x52(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.D & 0x04) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 2,E
+void executeCB0x53(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.E & 0x04) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 2,H
+void executeCB0x54(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.H & 0x04) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 2,L
+void executeCB0x55(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.L & 0x04) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 2,(HL)
+void executeCB0x56(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+
+    setFlag(reg, FLAG_Z, (value & 0x04) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    writeMemory(mem, hl, value);
+
+    reg.PC += 2;
+}
+
+//BIT 2,A
+void executeCB0x57(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.A & 0x04) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 3,B
+void executeCB0x58(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.B & 0x08) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 3,C
+void executeCB0x59(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.C & 0x08) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 3,D
+void executeCB0x5A(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.D & 0x08) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 3,E
+void executeCB0x5B(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.E & 0x08) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 3,H
+void executeCB0x5C(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.H & 0x08) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 3,L
+void executeCB0x5D(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.L & 0x08) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;
+}
+
+//BIT 3,(HL)
+void executeCB0x5E(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+
+    setFlag(reg, FLAG_Z, (value & 0x08) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//BIT 3,A
+void executeCB0x5F(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.A & 0x08) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 4,B
+void executeCB0x60(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.B & 0x10) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 4,C
+void executeCB0x61(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.C & 0x10) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 4,D
+void executeCB0x62(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.D & 0x10) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 4,E
+void executeCB0x63(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.E & 0x10) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 4,H
+void executeCB0x64(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.H & 0x10) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 4,L
+void executeCB0x65(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.L & 0x10) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 4,(HL)
+void executeCB0x66(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+
+    setFlag(reg, FLAG_Z, (value & 0x10) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//BIT 4,A
+void executeCB0x67(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.A & 0x10) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 5,B
+void executeCB0x68(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.B & 0x20) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 5,C
+void executeCB0x69(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.C & 0x20) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 5,D
+void executeCB0x6A(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.D & 0x20) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 5,E
+void executeCB0x6B(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.E & 0x20) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 5,H
+void executeCB0x6C(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.H & 0x20) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 5,L
+void executeCB0x6D(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.L & 0x20) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 5,(HL)
+void executeCB0x6E(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    setFlag(reg, FLAG_Z, (value & 0x20) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    writeMemory(mem, hl, value);
+    reg.PC += 2;;
+}
+
+//BIT 5,A
+void executeCB0x6F(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.A & 0x20) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 6,B
+void executeCB0x70(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.B & 0x40) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 6,C
+void executeCB0x71(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.C & 0x40) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 6,D
+void executeCB0x72(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.D & 0x40) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 6,E
+void executeCB0x73(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.E & 0x40) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 6,H
+void executeCB0x74(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.H & 0x40) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 6,L
+void executeCB0x75(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.H & 0x40) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 6,(HL)
+void executeCB0x76(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+
+    setFlag(reg, FLAG_Z, (value & 0x40) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    writeMemory(mem, hl, value);
+    reg.PC += 2;;
+}
+
+//BIT 6,A
+void executeCB0x77(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.A & 0x40) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 7,B
+void executeCB0x78(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.B & 0x80) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 7,C
+void executeCB0x79(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.C & 0x80) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 7,D
+void executeCB0x7A(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.D & 0x80) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 7,E
+void executeCB0x7B(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.E & 0x80) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 7,H
+void executeCB0x7C(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.H & 0x80) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 7,L
+void executeCB0x7D(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.L & 0x80) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+//BIT 7,(HL)
+void executeCB0x7E(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    setFlag(reg, FLAG_Z, (reg.L & 0x80) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    writeMemory(mem, hl, value);
+    reg.PC += 2;;
+}
+
+//BIT 7,A
+void executeCB0x7F(Registers& reg) {
+    setFlag(reg, FLAG_Z, (reg.A & 0x80) == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 2;;
+}
+
+
+//RES 0,B
+void executeCB0x80(Registers& reg) {
+    reg.B &= ~0x01;
+    reg.PC += 2;
+}
+
+//RES 0,C
+void executeCB0x81(Registers& reg) {
+    reg.C &= ~0x01;
+    reg.PC += 2;
+}
+
+//RES 0,D
+void executeCB0x82(Registers& reg) {
+    reg.D &= ~0x01;
+    reg.PC += 2;
+}
+
+//RES 0,E
+void executeCB0x83(Registers& reg) {
+    reg.E &= ~0x01;
+    reg.PC += 2;
+}
+
+//RES 0,H
+void executeCB0x84(Registers& reg) {
+    reg.H &= ~0x01;
+    reg.PC += 2;
+}
+
+//RES 0,L
+void executeCB0x85(Registers& reg) {
+    reg.L &= ~0x01;
+    reg.PC += 2;
+}
+
+//RES 0,(HL)
+void executeCB0x86(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    value &= ~0x01;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//RES 0,A
+void executeCB0x87(Registers& reg) {
+    reg.A &= ~0x01;
+    reg.PC += 2;
+}
+
+//RES 1,B
+void executeCB0x88(Registers& reg) {
+    reg.B &= ~0x02;
+    reg.PC += 2;
+}
+
+//RES 1,C
+void executeCB0x89(Registers& reg) {
+    reg.C &= ~0x02;
+    reg.PC += 2;
+}
+
+//RES 1,D
+void executeCB0x8A(Registers& reg) {
+    reg.D &= ~0x02;
+    reg.PC += 2;
+}
+
+//RES 1,E
+void executeCB0x8B(Registers& reg) {
+    reg.E &= ~0x02;
+    reg.PC += 2;
+}
+
+//RES 1,H
+void executeCB0x8C(Registers& reg) {
+    reg.H &= ~0x02;
+    reg.PC += 2;
+}
+
+//RES 1,L
+void executeCB0x8D(Registers& reg) {
+    reg.L &= ~0x02;
+    reg.PC += 2;
+}
+
+//RES 1,(HL)
+void executeCB0x8E(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    value &= ~0x02;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//RES 1,A
+void executeCB0x8F(Registers& reg) {
+    reg.A &= ~0x02;
+    reg.PC += 2;
+}
+
+//RES 2,B
+void executeCB0x90(Registers& reg) {
+    reg.B &= ~0x04;
+    reg.PC += 2;
+}
+
+//RES 2,C
+void executeCB0x91(Registers& reg) {
+    reg.C &= ~0x04;
+    reg.PC += 2;
+}
+
+//RES 2,D
+void executeCB0x92(Registers& reg) {
+    reg.D &= ~0x04;
+    reg.PC += 2;
+}
+
+//RES 2,E
+void executeCB0x93(Registers& reg) {
+    reg.E &= ~0x04;
+    reg.PC += 2;
+}
+
+//RES 2,H
+void executeCB0x94(Registers& reg) {
+    reg.H &= ~0x04;
+    reg.PC += 2;
+}
+
+//RES 2,L
+void executeCB0x95(Registers& reg) {
+    reg.L &= ~0x04;
+    reg.PC += 2;
+}
+
+//RES 2,(HL)
+void executeCB0x96(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    value &= ~0x04;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//RES 2,A
+void executeCB0x97(Registers& reg) {
+    reg.A &= ~0x04;
+    reg.PC += 2;
+}
+
+//RES 3,B
+void executeCB0x98(Registers& reg) {
+    reg.B &= ~0x08;
+    reg.PC += 2;
+}
+
+//RES 3,C
+void executeCB0x99(Registers& reg) {
+    reg.C &= ~0x08;
+    reg.PC += 2;
+}
+
+//RES 3,D
+void executeCB0x9A(Registers& reg) {
+    reg.D &= ~0x08;
+    reg.PC += 2;
+}
+
+//RES 3,E
+void executeCB0x9B(Registers& reg) {
+    reg.E &= ~0x08;
+    reg.PC += 2;
+}
+
+//RES 3,H
+void executeCB0x9C(Registers& reg) {
+    reg.H &= ~0x08;
+    reg.PC += 2;
+}
+
+//RES 3,L
+void executeCB0x9D(Registers& reg) {
+    reg.L &= ~0x08;
+    reg.PC += 2;
+}
+
+//RES 3,(HL)
+void executeCB0x9E(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    value &= ~0x08;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//RES 3,A
+void executeCB0x9F(Registers& reg) {
+    reg.A &= ~0x08;
+    reg.PC += 2;
+}
+
+//RES 4,B
+void executeCB0xA0(Registers& reg) {
+    reg.B &= ~0x10;
+    reg.PC += 2;
+}
+
+//RES 4,C
+void executeCB0xA1(Registers& reg) {
+    reg.C &= ~0x10;
+    reg.PC += 2;
+}
+
+//RES 4,D
+void executeCB0xA2(Registers& reg) {
+    reg.D &= ~0x10;
+    reg.PC += 2;
+}
+
+//RES 4,E
+void executeCB0xA3(Registers& reg) {
+    reg.E &= ~0x10;
+    reg.PC += 2;
+}
+
+//RES 4,H
+void executeCB0xA4(Registers& reg) {
+    reg.H &= ~0x10;
+    reg.PC += 2;
+}
+
+//RES 4,L
+void executeCB0xA5(Registers& reg) {
+    reg.L &= ~0x10;
+    reg.PC += 2;
+}
+
+//RES 4,(HL)
+void executeCB0xA6(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    value &= ~0x10;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//RES 4,A
+void executeCB0xA7(Registers& reg) {
+    reg.A &= ~0x10;
+    reg.PC += 2;
+}
+
+//RES 5,B
+void executeCB0xA8(Registers& reg) {
+    reg.B &= ~0x20;
+    reg.PC += 2;
+}
+
+//RES 5,C
+void executeCB0xA9(Registers& reg) {
+    reg.C &= ~0x20;
+    reg.PC += 2;
+}
+
+//RES 5,D
+void executeCB0xAA(Registers& reg) {
+    reg.D &= ~0x20;
+    reg.PC += 2;
+}
+
+//RES 5,E
+void executeCB0xAB(Registers& reg) {
+    reg.E &= ~0x20;
+    reg.PC += 2;
+}
+
+//RES 5,H
+void executeCB0xAC(Registers& reg) {
+    reg.H &= ~0x20;
+    reg.PC += 2;
+}
+
+//RES 5,L
+void executeCB0xAD(Registers& reg) {
+    reg.L &= ~0x20;
+    reg.PC += 2;
+}
+
+//RES 5,(HL)
+void executeCB0xAE(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    value &= ~0x20;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//RES 5,A
+void executeCB0xAF(Registers& reg) {
+    reg.A &= ~0x20;
+    reg.PC += 2;
+}
+
+
+//RES 6,B
+void executeCB0xB0(Registers& reg) {
+    reg.B &= ~0x40;
+    reg.PC += 2;
+}
+
+//RES 6,C
+void executeCB0xB1(Registers& reg) {
+    reg.C &= ~0x40;
+    reg.PC += 2;
+}
+
+//RES 6,D
+void executeCB0xB2(Registers& reg) {
+    reg.D &= ~0x40;
+    reg.PC += 2;
+}
+
+//RES 6,E
+void executeCB0xB3(Registers& reg) {
+    reg.E &= ~0x40;
+    reg.PC += 2;
+}
+
+//RES 6,H
+void executeCB0xB4(Registers& reg) {
+    reg.H &= ~0x40;
+    reg.PC += 2;
+}
+
+//RES 6,L
+void executeCB0xB5(Registers& reg) {
+    reg.L &= ~0x40;
+    reg.PC += 2;
+}
+
+//RES 6,(HL)
+void executeCB0xB6(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    value &= ~0x40;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//RES 6,A
+void executeCB0xB7(Registers& reg) {
+    reg.A &= ~0x40;
+    reg.PC += 2;
+}
+
+//RES 7,B
+void executeCB0xB8(Registers& reg) {
+    reg.B &= ~0x80;
+    reg.PC += 2;
+}
+
+//RES 7,C
+void executeCB0xB9(Registers& reg) {
+    reg.C &= ~0x80;
+    reg.PC += 2;
+}
+
+//RES 7,D
+void executeCB0xBA(Registers& reg) {
+    reg.D &= ~0x80;
+    reg.PC += 2;
+}
+
+//RES 7,E
+void executeCB0xBB(Registers& reg) {
+    reg.E &= ~0x80;
+    reg.PC += 2;
+}
+
+//RES 7,H
+void executeCB0xBC(Registers& reg) {
+    reg.H &= ~0x80;
+    reg.PC += 2;
+}
+
+//RES 7,L
+void executeCB0xBD(Registers& reg) {
+    reg.L &= ~0x80;
+    reg.PC += 2;
+}
+
+//RES 7,(HL)
+void executeCB0xBE(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    value &= ~0x80;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;
+}
+
+//RES 7,A
+void executeCB0xBF(Registers& reg) {
+    reg.A &= ~0x80;
+    reg.PC += 2;
+}
+
 //SET 0,B
 void executeCB0xC0(Registers& reg) {
     reg.B |= 0x01;
@@ -2526,6 +4423,116 @@ void executeCB0xEF(Registers& reg) {
     reg.A |= 0x20;
     reg.PC += 2;  
 }
+
+//SET 6,B
+void executeCB0xF0(Registers& reg) {
+    reg.B |= 0x40;
+    reg.PC += 2;  
+}
+
+//SET 6,C
+void executeCB0xF1(Registers& reg) {
+    reg.C |= 0x40;
+    reg.PC += 2;  
+}
+
+//SET 6,D
+void executeCB0xF2(Registers& reg) {
+    reg.D |= 0x40;
+    reg.PC += 2;  
+}
+
+//SET 6,E
+void executeCB0xF3(Registers& reg) {
+    reg.E |= 0x40;
+    reg.PC += 2;  
+}
+
+//SET 6,H
+void executeCB0xF4(Registers& reg) {
+    reg.H |= 0x40;
+    reg.PC += 2;  
+}
+
+//SET 6,L
+void executeCB0xF5(Registers& reg) {
+    reg.L |= 0x40;
+    reg.PC += 2;  
+}
+
+//SET 6,(HL)
+void executeCB0xF6(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    value |= 0x40;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;  
+}
+
+//SET 6,A
+void executeCB0xF7(Registers& reg) {
+    reg.A |= 0x40;
+    reg.PC += 2;  
+}
+
+//SET 7,B
+void executeCB0xF8(Registers& reg) {
+    reg.B |= 0x80;
+    reg.PC += 2;  
+}
+
+//SET 7,C
+void executeCB0xF9(Registers& reg) {
+    reg.C |= 0x80;
+    reg.PC += 2;  
+}
+
+//SET 7,D
+void executeCB0xFA(Registers& reg) {
+    reg.D |= 0x80;
+    reg.PC += 2;  
+}
+
+//SET 7,E
+void executeCB0xFB(Registers& reg) {
+    reg.E |= 0x80;
+    reg.PC += 2;  
+}
+
+
+//SET 7,H
+void executeCB0xFC(Registers& reg) {
+    reg.H |= 0x80;
+    reg.PC += 2;  
+}
+
+//SET 7,L
+void executeCB0xFD(Registers& reg) {
+    reg.L |= 0x80;
+    reg.PC += 2;  
+}
+
+//SET 7,(HL)
+void executeCB0xFE(Registers& reg, Memory& mem) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint8_t value = readMemory(mem, hl);
+    value |= 0x80;
+    writeMemory(mem, hl, value);
+    reg.PC += 2;  
+}
+
+
+//SET 7,A
+void executeCB0xFF(Registers& reg) {
+    reg.A |= 0x80;
+    reg.PC += 2;  
+}
+
+
+
+
+
+
 
 
 
