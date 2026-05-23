@@ -135,37 +135,152 @@ void execute0x01(Registers& reg, Memory& mem) {
     reg.PC += 3;
 }
 
+//LD [BC], A
 void execute0x02(Registers& reg, Memory& mem) {
     uint8_t hi = reg.B;
     uint8_t lo = reg.C;
 
     uint16_t bc = (hi << 8) | lo;
-    
-    writeMemory(mem, bc, reg.A);
+    writeMemory(mem, bc , reg.A);
     reg.PC += 1;
 }
 
+//INC BC
+void execute0x03(Registers& reg) {
+    uint16_t bc = (reg.B << 8) | reg.C;
+    bc += 1;
+    reg.B = bc >> 8;
+    reg.C = bc & 0xFF;
+    reg.PC += 1;
+}
 
+//INC B
+void execute0x04(Registers& reg) {
+    uint8_t prev = reg.B;
+    reg.B += 1;
+
+    setFlag(reg, FLAG_Z, reg.B == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, (prev & 0x0F) == 0x0F);
+
+    reg.PC += 1;
+}
+
+//DEC B
+void execute0x05(Registers& reg) {
+    uint8_t prev = reg.B;
+    reg.B -= 1;
+
+    setFlag(reg, FLAG_Z, reg.B == 0);
+    setFlag(reg, FLAG_N, true);
+    setFlag(reg, FLAG_H, (prev & 0x0F) == 0x00);
+
+    reg.PC += 1;
+}
+
+//LD B, n8
 void execute0x06(Registers& reg, Memory& mem) {
-    uint8_t hi = mem.data[reg.PC+1];
-    reg.B = hi;
-
+    reg.B = readMemory(mem, reg.PC+1);
     reg.PC +=2;
+}
+
+//RLCA
+void execute0x07(Registers& reg) {
+    uint8_t bit7 = (reg.A >> 7) & 1;
+    reg.A = (reg.A << 1) | bit7;
+
+    setFlag(reg, FLAG_Z, false);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 1;
+}
+
+// LD [a16], SP
+void execute0x08(Registers& reg, Memory& mem) {
+    uint8_t lo = readMemory(mem, reg.PC + 1);
+    uint8_t hi = readMemory(mem, reg.PC + 2);
+    uint16_t address = (hi << 8) | lo;
+
+    writeMemory(mem, address, reg.SP & 0xFF);
+    writeMemory(mem, address + 1, reg.SP >> 8);
+
+    reg.PC += 3;
+}
+
+//ADD HL, BC
+void execute0x09(Registers& reg) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint16_t bc = (reg.B << 8) | reg.C;
+    uint32_t result = hl + bc;
+
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, ((hl & 0x0FFF) + (bc & 0x0FFF)) > 0x0FFF);
+    setFlag(reg, FLAG_C, result > 0xFFFF);
+
+    reg.H = (result >> 8) & 0xFF;
+    reg.L = result & 0xFF;
+    reg.PC += 1;
 }
 
 //LD A, [BC]
 void execute0x0A(Registers& reg, Memory& mem) {
     uint16_t bc = (reg.B << 8) | reg.C;
-    reg.A = mem.data[bc];
-
+    reg.A = readMemory(mem, bc);
     reg.PC +=1;
 }
 
+//DEC BC
+void execute0x0B(Registers& reg) {
+    uint16_t bc = (reg.B << 8) | reg.C;
+    bc -= 1;
+    reg.B = bc >> 8;
+    reg.C = bc & 0xFF;
+    reg.PC += 1;
+}
+
+//INC C
+void execute0x0C(Registers& reg) {
+    uint8_t prev = reg.C;
+    reg.C += 1;
+
+    setFlag(reg, FLAG_Z, reg.C == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, (prev & 0x0F) == 0x0F);
+
+    reg.PC += 1;
+}
+
+//DEC C
+void execute0x0D(Registers& reg) {
+    uint8_t prev = reg.C;
+    reg.C -= 1;
+
+    setFlag(reg, FLAG_Z, reg.C == 0);
+    setFlag(reg, FLAG_N, true);
+    setFlag(reg, FLAG_H, (prev & 0x0F) == 0x00);
+
+    reg.PC += 1;
+}
+
+//LD C, n8
 void execute0x0E(Registers& reg, Memory& mem) {
-    uint8_t hi = mem.data[reg.PC+1];
-    reg.C = hi;
- 
+    reg.C = readMemory(mem, reg.PC+1);
     reg.PC += 2;
+}
+
+//RRCA
+void execute0x0F(Registers& reg) {
+    uint8_t bit0 = reg.A & 1;
+    reg.A = (reg.A >> 1) | (bit0 << 7);
+
+    setFlag(reg, FLAG_Z, false);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 1;
 }
 
 // LD DE, n16
