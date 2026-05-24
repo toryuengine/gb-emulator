@@ -283,10 +283,16 @@ void execute0x0F(Registers& reg) {
     reg.PC += 1;
 }
 
+// STOP
+void execute0x10(Registers& reg) {
+    reg.halted = true;
+    reg.PC += 2;
+}
+
 // LD DE, n16
 void execute0x11(Registers& reg, Memory& mem) {
-    uint8_t lo = mem.data[reg.PC+1];
-    uint8_t hi = mem.data[reg.PC+2];
+    uint8_t lo = readMemory(mem, reg.PC+1);
+    uint8_t hi = readMemory(mem, reg.PC+2);
 
     reg.D = hi;
     reg.E = lo;
@@ -301,38 +307,164 @@ void execute0x12(Registers& reg, Memory& mem) {
 
     uint16_t de = (hi << 8) | lo;
 
-    mem.data[de] = reg.A;
+    writeMemory(mem, de, reg.A);
+    reg.PC += 1;
+}
+
+//INC DE
+void execute0x13(Registers& reg, Memory& mem) {
+    uint16_t de = (reg.D << 8) | reg.E;
+    de += 1;
+
+    reg.D = (de >> 8);
+    reg.E = de & 0xFF;
+
+    reg.PC +=1;
+}
+
+//INC D
+void execute0x14(Registers& reg) {
+    uint8_t prev = reg.D;
+    reg.D += 1;
+
+    setFlag(reg, FLAG_Z, reg.D == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, (prev & 0x0F) == 0x0F);
+
+    reg.PC += 1;
+}
+
+//DEC D
+void execute0x15(Registers& reg) {
+    uint8_t prev = reg.D;
+    reg.D -= 1;
+
+    setFlag(reg, FLAG_Z, reg.D == 0);
+    setFlag(reg, FLAG_N, true);
+    setFlag(reg, FLAG_H, (prev & 0x0F) == 0x00);
+
     reg.PC += 1;
 }
 
 //LD D, n8
 void execute0x16(Registers& reg, Memory& mem) {
-    uint8_t value = mem.data[reg.PC+1];
+    uint8_t value = readMemory(mem, reg.PC+1);
     reg.D = value;
 
     reg.PC += 2;
 }
 
+// RLA
+void execute0x17(Registers& reg) {
+    uint8_t bit7 = (reg.A >> 7) & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.A = (reg.A << 1) | carry;
+
+    setFlag(reg, FLAG_Z, false);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit7);
+
+    reg.PC += 1;
+}
+
+//JR r8
+void execute0x18(Registers& reg, Memory& mem) {
+    int8_t r8 = (int8_t)readMemory(mem, reg.PC + 1);
+    reg.PC += 2;
+    reg.PC += r8;
+}
+
+//ADD HL,DE
+void execute0x19(Registers& reg) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint16_t de = (reg.D << 8) | reg.E;
+    uint32_t result = hl + de;
+
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, ((hl & 0x0FFF) + (de & 0x0FFF)) > 0x0FFF);
+    setFlag(reg, FLAG_C, result > 0xFFFF);
+
+    reg.H = (result >> 8) & 0xFF;
+    reg.L = result & 0xFF;
+    reg.PC += 1;
+}
+
 //LD A, [DE]
 void execute0x1A(Registers& reg, Memory& mem) {
     uint16_t de = (reg.D << 8) | reg.E;
-    reg.A = mem.data[de];
+    reg.A = readMemory(mem, de);
 
     reg.PC +=1;
 }
 
-//LD E, n8
-void execute0x1E(Registers& reg, Memory& mem) {
-    uint8_t value = mem.data[reg.PC +1];
+//DEC DE
+void execute0x1B(Registers& reg) {
+    uint16_t de = (reg.D << 8) | reg.E;
+    de -= 1;
+    reg.D = de >> 8;
+    reg.E = de & 0xFF;
+    reg.PC += 1;
+}
 
-    reg.E = value;
+
+//INC E
+void execute0x1C(Registers& reg, Memory& mem) {
+    uint8_t prev = reg.E;
+    reg.E += 1;
+
+    setFlag(reg, FLAG_Z, reg.E == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, (prev & 0x0F) == 0x0F);
+
+    reg.PC += 1;
+}
+
+//DEC E
+void execute0x1D(Registers& reg) {
+    uint8_t prev = reg.E;
+    reg.E -= 1;
+
+    setFlag(reg, FLAG_Z, reg.E == 0);
+    setFlag(reg, FLAG_N, true);
+    setFlag(reg, FLAG_H, (prev & 0x0F) == 0x00);
+
+    reg.PC += 1;
+}
+
+//LD E,d8
+void execute0x1E(Registers& reg, Memory& mem) {
+    reg.E = readMemory(mem, reg.PC+1);
     reg.PC += 2;
+}
+
+//RRA
+void execute0x1F(Registers& reg) {
+    uint8_t bit0 = reg.A & 1;
+    uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
+    reg.A = (reg.A >> 1) | (carry << 7);
+
+    setFlag(reg, FLAG_Z, false);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, false);
+    setFlag(reg, FLAG_C, bit0);
+
+    reg.PC += 1;
+}
+
+//JR NZ,r8
+void execute0x20(Registers& reg, Memory& mem) {
+    int8_t r8 = (int8_t)readMemory(mem, reg.PC + 1);
+    reg.PC += 2;
+    if (!getFlag(reg, FLAG_Z)) {
+        reg.PC += r8;
+    }
 }
 
 //LD HL, n16
 void execute0x21(Registers& reg, Memory& mem) {
-    uint8_t lo = mem.data[reg.PC+1];
-    uint8_t hi = mem.data[reg.PC+2];
+    uint8_t lo = readMemory(mem, reg.PC+1);
+    uint8_t hi = readMemory(mem, reg.PC+2);
 
     reg.H = hi;
     reg.L = lo;
@@ -344,7 +476,7 @@ void execute0x21(Registers& reg, Memory& mem) {
 void execute0x22(Registers& reg, Memory& mem) {
     uint16_t hl = (reg.H << 8) | reg.L;
     
-    mem.data[hl] = reg.A;
+    writeMemory(mem, hl, reg.A);
     hl +=1;
 
     reg.H = (hl >> 8);
@@ -353,20 +485,98 @@ void execute0x22(Registers& reg, Memory& mem) {
     reg.PC +=1;
 }
 
+//INC HL
+void execute0x23(Registers& reg) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    hl += 1;
+
+    reg.H = (hl >> 8);
+    reg.L = hl & 0xFF;
+
+    reg.PC +=1;
+}
+
+//INC H
+void execute0x24(Registers& reg) {
+    uint8_t prev = reg.H;
+    reg.H += 1;
+
+    setFlag(reg, FLAG_Z, reg.H == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, (prev & 0x0F) == 0x0F);
+
+    reg.PC += 1;
+}
+
+//DEC H
+void execute0x25(Registers& reg) {
+    uint8_t prev = reg.H;
+    reg.H -= 1;
+
+    setFlag(reg, FLAG_Z, reg.H == 0);
+    setFlag(reg, FLAG_N, true);
+    setFlag(reg, FLAG_H, (prev & 0x0F) == 0x00);
+
+    reg.PC += 1;
+}
+
 //LD H, n8
 void execute0x26(Registers& reg, Memory& mem) {
-    uint8_t value = mem.data[reg.PC+1];
-
-    reg.H = value;
-
+    reg.H = readMemory(mem, reg.PC+1);
     reg.PC += 2;
+}
+
+//DAA
+void execute0x27(Registers& reg) {
+    uint8_t a = reg.A;
+    bool n = getFlag(reg, FLAG_N);
+    bool h = getFlag(reg, FLAG_H);
+    bool c = getFlag(reg, FLAG_C);
+
+    if (!n) {
+        if (c || a > 0x99) { a += 0x60; setFlag(reg, FLAG_C, true); }
+        if (h || (a & 0x0F) > 0x09) { a += 0x06; }
+    } else {
+        if (c) { a -= 0x60; }
+        if (h) { a -= 0x06; }
+    }
+
+    reg.A = a;
+    setFlag(reg, FLAG_Z, reg.A == 0);
+    setFlag(reg, FLAG_H, false);
+
+    reg.PC += 1;
+}
+
+//JR Z,r8
+void execute0x28(Registers& reg, Memory& mem) {
+    int8_t r8 = (int8_t)readMemory(mem, reg.PC+1);
+    reg.PC += 2;
+    if (getFlag(reg, FLAG_Z)) {
+        reg.PC += r8;
+    }
+}
+
+//ADD HL,HL
+void execute0x29(Registers& reg) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    uint16_t hl2 = (reg.H << 8) | reg.L;
+    uint32_t result = hl + hl2;
+
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, ((hl & 0x0FFF) + (hl2 & 0x0FFF)) > 0x0FFF);
+    setFlag(reg, FLAG_C, result > 0xFFFF);
+
+    reg.H = (result >> 8) & 0xFF;
+    reg.L = result & 0xFF;
+    reg.PC += 1;
 }
 
 //LD A, [HL+]
 void execute0x2A(Registers& reg, Memory& mem) {
     uint16_t hl = (reg.H << 8) | reg.L;
 
-    reg.A = mem.data[hl];
+    reg.A = readMemory(mem, hl);
     hl +=1;
     
     reg.H = (hl >> 8);
@@ -375,13 +585,55 @@ void execute0x2A(Registers& reg, Memory& mem) {
     reg.PC += 1;
 }
 
+//DEC HL
+void execute0x2B(Registers& reg) {
+    uint16_t hl = (reg.H << 8) | reg.L;
+    hl -= 1;
+    reg.H = hl >> 8;
+    reg.L = hl & 0xFF;
+    reg.PC += 1;
+}
+
+//INC L
+void execute0x2C(Registers& reg) {
+    uint8_t prev = reg.L;
+    reg.L += 1;
+
+    setFlag(reg, FLAG_Z, reg.L == 0);
+    setFlag(reg, FLAG_N, false);
+    setFlag(reg, FLAG_H, (prev & 0x0F) == 0x0F);
+
+    reg.PC += 1;
+}
+
+//DEC L
+void execute0x2D(Registers& reg) {
+    uint8_t prev = reg.L;
+    reg.L -= 1;
+
+    setFlag(reg, FLAG_Z, reg.L == 0);
+    setFlag(reg, FLAG_N, true);
+    setFlag(reg, FLAG_H, (prev & 0x0F) == 0x00);
+
+    reg.PC += 1;
+}
+
 //LD L, n8
 void execute0x2E(Registers& reg, Memory& mem) {
-    uint8_t value = mem.data[reg.PC+1];
-
-    reg.L = value;
+    reg.L = readMemory(mem, reg.PC);
     reg.PC += 2;
 }
+
+// CPL
+void execute0x2F(Registers& reg) {
+    reg.A = ~reg.A;
+
+    setFlag(reg, FLAG_N, true);
+    setFlag(reg, FLAG_H, true);
+
+    reg.PC += 1;
+}
+
 
 //LD [HL-], A
 void execute0x32(Registers& reg, Memory& mem) {
