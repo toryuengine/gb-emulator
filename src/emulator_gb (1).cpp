@@ -2196,8 +2196,8 @@ void execute0xC8(Registers& reg, Memory& mem) {
 
 // RET
 void execute0xC9(Registers& reg, Memory& mem) {
-    uint8_t lo = mem.data[reg.SP];
-    uint8_t hi = mem.data[reg.SP + 1];
+    uint8_t lo = readMemory(mem, reg.SP);
+    uint8_t hi = readMemory(mem, reg.SP+1);
     reg.PC = (hi << 8) | lo;
     reg.SP += 2;
 }
@@ -2205,8 +2205,8 @@ void execute0xC9(Registers& reg, Memory& mem) {
 // JP Z, a16
 void execute0xCA(Registers& reg, Memory& mem) {
     if (getFlag(reg, FLAG_Z)) {
-        uint8_t lo = mem.data[reg.PC + 1];
-        uint8_t hi = mem.data[reg.PC + 2];
+        uint8_t lo = readMemory(mem, reg.PC+1);
+        uint8_t hi = readMemory(mem, reg.PC+2);
         reg.PC = (hi << 8) | lo;
     } else {
         reg.PC += 3;
@@ -2216,20 +2216,20 @@ void execute0xCA(Registers& reg, Memory& mem) {
 // PREFIX CB
 void execute0xCB(Registers& reg, Memory& mem) {
     reg.PC += 1;
-    uint8_t opcode = mem.data[reg.PC];
+    uint8_t opcode = readMemory(mem, reg.PC);
     // CB命令のswitchに渡す処理をここに追加する
     executeCB(reg, mem, opcode);
 }
 
-// CALL NZ, a16
+// CALL Z, a16
 void execute0xCC(Registers& reg, Memory& mem) {
-    if (!getFlag(reg, FLAG_Z)) {
-        uint8_t lo = mem.data[reg.PC + 1];
-        uint8_t hi = mem.data[reg.PC + 2];
+    if (getFlag(reg, FLAG_Z)) {
+        uint8_t lo = readMemory(mem, reg.PC+1);
+        uint8_t hi = readMemory(mem, reg.PC+2);
 
         uint16_t next = reg.PC + 3;
-        mem.data[reg.SP - 1] = (next >> 8);
-        mem.data[reg.SP - 2] = (next & 0xFF);
+        writeMemory(mem, reg.SP-1, (next >> 8));
+        writeMemory(mem, reg.SP-2, (next & 0xFF));
         reg.SP -= 2;
 
         reg.PC = (hi << 8) | lo;
@@ -2241,12 +2241,12 @@ void execute0xCC(Registers& reg, Memory& mem) {
 // CALL Z, a16
 void execute0xCC(Registers& reg, Memory& mem) {
     if (getFlag(reg, FLAG_Z)) {
-        uint8_t lo = mem.data[reg.PC + 1];
-        uint8_t hi = mem.data[reg.PC + 2];
+        uint8_t lo = readMemory(mem, reg.PC + 1);
+        uint8_t hi = readMemory(mem, reg.PC + 2);
 
         uint16_t next = reg.PC + 3;
-        mem.data[reg.SP - 1] = (next >> 8);
-        mem.data[reg.SP - 2] = (next & 0xFF);
+        writeMemory(mem, reg.SP - 1, (next >> 8));
+        writeMemory(mem, reg.SP - 2, (next & 0xFF));
         reg.SP -= 2;
 
         reg.PC = (hi << 8) | lo;
@@ -2271,7 +2271,7 @@ void execute0xCD(Registers& reg, Memory& mem) {
 // ADC A,d8
 void execute0xCE(Registers& reg, Memory& mem) {
     uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
-    uint8_t d8 = mem.data[reg.PC+1];
+    uint8_t d8 = readMemory(mem, reg.PC+1);
     uint16_t result = reg.A + d8 + carry;
 
     setFlag(reg, FLAG_Z, (result & 0xFF) == 0);
@@ -2286,8 +2286,8 @@ void execute0xCE(Registers& reg, Memory& mem) {
 //RST 08H
 void execute0xCF(Registers& reg, Memory& mem) {
     uint16_t next = reg.PC + 1;
-    mem.data[reg.SP - 1] = (reg.PC >> 8) & 0xFF; // 上位バイト
-    mem.data[reg.SP - 2] = reg.PC & 0xFF;         // 下位バイト
+    writeMemory(mem, reg.SP, (next >> 8) & 0xFF);// 上位バイト
+    writeMemory(mem, reg.SP, next & 0xFF);     // 下位バイト
     reg.SP -= 2;
 
     reg.PC = 0x0008;
@@ -2297,8 +2297,8 @@ void execute0xCF(Registers& reg, Memory& mem) {
 //RET NC
 void execute0xD0(Registers& reg, Memory& mem) {
     if(!getFlag(reg, FLAG_C)) {
-        uint8_t lo = mem.data[reg.SP];
-        uint8_t hi = mem.data[reg.SP+1];
+        uint8_t lo = readMemory(mem, reg.SP);
+        uint8_t hi = readMemory(mem, reg.SP+1);
         
         reg.PC = (hi << 8) | lo;
         reg.SP += 2;
@@ -2309,8 +2309,8 @@ void execute0xD0(Registers& reg, Memory& mem) {
 
 //POP DE
 void execute0xD1(Registers& reg, Memory& mem) {
-    uint8_t lo = mem.data[reg.SP];
-    uint8_t hi = mem.data[reg.SP+1];
+    uint8_t lo = readMemory(mem, reg.SP);
+    uint8_t hi = readMemory(mem, reg.SP+1);
 
     reg.E = lo;
     reg.D = hi;
@@ -2322,51 +2322,45 @@ void execute0xD1(Registers& reg, Memory& mem) {
 //JP NC,a16
 void execute0xD2(Registers& reg, Memory& mem) {
     if(!getFlag(reg, FLAG_C)) {
-        uint8_t lo = mem.data[reg.PC + 1];
-        uint8_t hi = mem.data[reg.PC + 2];
-
+        uint8_t lo = readMemory(mem, reg.PC+1);
+        uint8_t hi = readMemory(mem, reg.PC+2);
         reg.PC = (hi << 8) | lo;
     } else {
     reg.PC += 3;
     }
 }
 
-
 //CALL NC,a16
 void execute0xD4(Registers& reg, Memory& mem) {
     if (!getFlag(reg, FLAG_C)) {
-        uint8_t lo = mem.data[reg.PC+1];
-        uint8_t hi = mem.data[reg.PC+2];
-
+        uint8_t lo = readMemory(mem, reg.PC+1);
+        uint8_t hi = readMemory(mem, reg.PC+2);
         uint16_t next = reg.PC + 3;
 
-        reg.PC = (hi << 8) | lo;
+        writeMemory(mem, reg.SP - 1, (next >> 8));
+        writeMemory(mem, reg.SP - 2, (next & 0xFF));
         reg.SP -= 2;
 
-        mem.data[reg.SP - 1] = (next >> 8);
-        mem.data[reg.SP - 2] = (next& 0xFF);
-    }else {
-        reg.PC +=3;
+        reg.PC = (hi << 8) | lo;
+    } else {
+        reg.PC += 3;
     }
 }
-
 
 //PUSH DE
 void execute0xD5(Registers& reg, Memory& mem) {
     reg.SP -= 1;
-    mem.data[reg.SP] = reg.D;
+    writeMemory(mem, reg.SP, reg.D);
     reg.SP -= 1;
-    mem.data[reg.SP] = reg.E;
-
+    writeMemory(mem, reg.SP, reg.E);
     reg.PC += 1;
 }
 
 
 //SUB d8
 void execute0xD6(Registers& reg, Memory& mem) {
-    uint8_t d8 = mem.data[reg.PC+1];
+    uint8_t d8 = readMemory(mem, reg.PC+1);
     uint16_t result = reg.A - d8;
-
 
     setFlag(reg, FLAG_Z, (result & 0xFF) == 0);
     setFlag(reg, FLAG_N, true);
@@ -2380,9 +2374,8 @@ void execute0xD6(Registers& reg, Memory& mem) {
 //RST 10H
 void execute0xD7(Registers& reg, Memory& mem) {
     uint16_t next = reg.PC + 1;
-    mem.data[reg.SP -1] = (next >> 8) & 0xFF;
-    mem.data[reg.SP -2] = (next & 0xFF);
-
+    writeMemory(mem, reg.SP-1, (next >> 8) & 0xFF);
+    writeMemory(mem, reg.SP-2, (next & 0xFF));
     reg.SP -=2;
     reg.PC = 0x0010;
 }
@@ -2390,8 +2383,8 @@ void execute0xD7(Registers& reg, Memory& mem) {
 //RET C
 void execute0xD8(Registers& reg, Memory& mem) {
     if (getFlag(reg, FLAG_C)) {
-        uint8_t lo = mem.data[reg.SP];
-        uint8_t hi = mem.data[reg.SP+1];
+        uint8_t lo = readMemory(mem, reg.SP);
+        uint8_t hi = readMemory(mem, reg.SP+1);
 
         reg.PC = (hi << 8) | lo;
         reg.SP -= 2;
@@ -2402,8 +2395,8 @@ void execute0xD8(Registers& reg, Memory& mem) {
 
 // RETI
 void execute0xD9(Registers& reg, Memory& mem) {
-    uint8_t lo = mem.data[reg.SP];
-    uint8_t hi = mem.data[reg.SP + 1];
+    uint8_t lo = readMemory(mem, reg.SP);
+    uint8_t hi = readMemory(mem, reg.SP +1);
     reg.PC = (hi << 8) | lo;
     reg.SP += 2;
 
@@ -2413,8 +2406,8 @@ void execute0xD9(Registers& reg, Memory& mem) {
 //JP C,a16
 void execute0xDA(Registers& reg, Memory& mem) {
     if (getFlag(reg, FLAG_C)) {
-        uint8_t lo = mem.data[reg.PC+1];
-        uint8_t hi = mem.data[reg.PC+2];
+        uint8_t lo = readMemory(mem, reg.PC+1);
+        uint8_t hi = readMemory(mem, reg.PC+2);
 
         reg.PC = (hi << 8) | lo;
     } else {
@@ -2426,12 +2419,12 @@ void execute0xDA(Registers& reg, Memory& mem) {
 //CALL C,a16
 void execute0xDC(Registers& reg, Memory& mem) {
     if(getFlag(reg, FLAG_C)) {
-        uint8_t lo = mem.data[reg.PC +1];
-        uint8_t hi = mem.data[reg.PC +2];
+        uint8_t lo = readMemory(mem, reg.PC+1);
+        uint8_t hi = readMemory(mem, reg.PC+2);
 
         uint16_t next = reg.PC +3;
-        mem.data[reg.SP-1] = next >> 8;
-        mem.data[reg.SP-2] = next& 0xFF;
+        writeMemory(mem, reg.SP-1, next >> 8);
+        writeMemory(mem, reg.SP-2, next & 0xFF);
         reg.SP -= 2;
         reg.PC = (hi << 8) | lo;
 
@@ -2442,7 +2435,7 @@ void execute0xDC(Registers& reg, Memory& mem) {
 
 //SBC A,d8
 void execute0xDE(Registers& reg, Memory& mem) {
-    uint8_t d8 = mem.data[reg.PC];
+    uint8_t d8 = readMemory(mem, reg.PC+1);
     uint8_t carry = getFlag(reg, FLAG_C) ? 1 : 0;
 
     uint16_t result = reg.A - d8 - carry;
@@ -2453,18 +2446,18 @@ void execute0xDE(Registers& reg, Memory& mem) {
     setFlag(reg, FLAG_C, reg.A < d8 + carry);
 
     reg.A = result & 0xFF;
-    reg.PC += 1;
+    reg.PC += 2;
 }
 
 //RST 18H
 void execute0xDF(Registers& reg, Memory& mem) {
     uint16_t next = reg.PC+1;
     
-    mem.data[reg.SP -1] = (next >> 8) & 0xFF;
-    mem.data[reg.SP -2] = next & 0xFF;
+    writeMemory(mem, reg.SP-1, (next >> 8) & 0xFF);
+    writeMemory(mem, reg.SP-2, next & 0xFF);
     reg.SP -= 2;
 
-    reg.PC = 0x0012;
+    reg.PC = 0x0018;
 }
 
 
